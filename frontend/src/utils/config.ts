@@ -16,20 +16,20 @@ const parseSeconds = (value: string | undefined, defaultSeconds: number): number
 
 export const config = {
   /** API base URL */
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  apiBaseUrl: import.meta.env.VITE_API_SERVICE_BASE_URL || 'http://localhost:8080',
 
   /** Default city to select */
   defaultCity: import.meta.env.VITE_DEFAULT_CITY || 'Seattle',
 
   /** Cache duration in milliseconds (how long data stays fresh) */
   cacheDuration: parseSeconds(
-    import.meta.env.VITE_CACHE_DURATION,
+    import.meta.env.VITE_FORECAST_CACHE_DURATION,
     120 // 2 minutes default (in seconds)
   ),
 
   /** Retry delay in milliseconds (how long to wait before retrying) */
   retryDelay: parseSeconds(
-    import.meta.env.VITE_RETRY_DELAY,
+    import.meta.env.VITE_FORECAST_RETRY_DELAY,
     120 // 2 minutes default (in seconds)
   ),
 } as const;
