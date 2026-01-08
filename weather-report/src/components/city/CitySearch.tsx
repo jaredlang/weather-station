@@ -1,5 +1,15 @@
 import { useState, useMemo } from 'react';
-import { Combobox, Transition, Dialog } from '@headlessui/react';
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxOptions,
+  ComboboxOption,
+  Transition,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle
+} from '@headlessui/react';
 import { MagnifyingGlassIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useStats } from '@/hooks/useStats';
 import { useAppStore } from '@/store/appStore';
@@ -102,7 +112,7 @@ export const CitySearch = () => {
       filteredCities.map((city) => {
         const statusLabel = getCityStatusLabel(city);
         return (
-          <Combobox.Option
+          <ComboboxOption
             key={city}
             value={city}
             className={({ active }) =>
@@ -136,11 +146,11 @@ export const CitySearch = () => {
                 )}
               </>
             )}
-          </Combobox.Option>
+          </ComboboxOption>
         );
       }),
     filteredCities.length === 0 && query !== '' && (
-      <Combobox.Option
+      <ComboboxOption
         key="add-custom-city"
         value={query.trim()}
         className={({ active }) =>
@@ -155,7 +165,7 @@ export const CitySearch = () => {
             {formatCityName(query.trim())}
           </span>
         </div>
-      </Combobox.Option>
+      </ComboboxOption>
     ),
   ];
 
@@ -167,7 +177,7 @@ export const CitySearch = () => {
           <div className="relative">
             <div className="relative w-full">
               <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-gray" />
-              <Combobox.Input
+              <ComboboxInput
                 className="w-full pl-12 pr-12 py-3 bg-white/50 dark:bg-gray-900/50 backdrop-blur-md rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-apple-blue dark:focus:ring-apple-darkblue text-apple-dark dark:text-apple-light placeholder:text-apple-gray"
                 placeholder="Search for a city..."
                 displayValue={(city: string) => formatCityName(city)}
@@ -193,9 +203,9 @@ export const CitySearch = () => {
               afterLeave={() => setQuery('')}
             >
               <div>
-                <Combobox.Options className="absolute mt-2 max-h-60 w-full overflow-auto rounded-xl bg-white dark:bg-gray-900 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-lg z-10">
+                <ComboboxOptions className="absolute mt-2 max-h-60 w-full overflow-auto rounded-xl bg-white dark:bg-gray-900 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-lg z-10">
                   {renderOptions()}
-                </Combobox.Options>
+                </ComboboxOptions>
               </div>
             </Transition>
           </div>
@@ -217,7 +227,7 @@ export const CitySearch = () => {
         {/* Mobile Dialog */}
         <Transition show={isMobileOpen}>
           <Dialog onClose={handleMobileClose} className="relative z-50">
-            <Transition.Child
+            <TransitionChild
               enter="ease-out duration-300"
               enterFrom="opacity-0"
               enterTo="opacity-100"
@@ -226,10 +236,10 @@ export const CitySearch = () => {
               leaveTo="opacity-0"
             >
               <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
-            </Transition.Child>
+            </TransitionChild>
 
             <div className="fixed inset-0 overflow-y-auto">
-              <Transition.Child
+              <TransitionChild
                 enter="ease-out duration-300"
                 enterFrom="opacity-0 scale-95"
                 enterTo="opacity-100 scale-100"
@@ -238,12 +248,12 @@ export const CitySearch = () => {
                 leaveTo="opacity-0 scale-95"
               >
                 <div>
-                  <Dialog.Panel className="min-h-screen bg-apple-light dark:bg-black">
+                  <DialogPanel className="min-h-screen bg-apple-light dark:bg-black">
                     <div className="sticky top-0 bg-apple-light/95 dark:bg-black/95 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 px-4 py-4">
                       <div className="flex items-center justify-between mb-4">
-                        <Dialog.Title className="text-lg font-semibold text-apple-dark dark:text-apple-light">
+                        <DialogTitle className="text-lg font-semibold text-apple-dark dark:text-apple-light">
                           Select City
-                        </Dialog.Title>
+                        </DialogTitle>
                         <button
                           onClick={handleMobileClose}
                           className="text-apple-gray hover:text-apple-dark dark:hover:text-apple-light transition-colors"
@@ -256,7 +266,7 @@ export const CitySearch = () => {
                       <Combobox value={selectedCity || ''} onChange={handleSelect}>
                         <div className="relative">
                           <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-gray" />
-                          <Combobox.Input
+                          <ComboboxInput
                             className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-apple-blue dark:focus:ring-apple-darkblue text-apple-dark dark:text-apple-light placeholder:text-apple-gray"
                             placeholder="Search for a city..."
                             displayValue={(city: string) => formatCityName(city)}
@@ -266,14 +276,14 @@ export const CitySearch = () => {
                           />
                         </div>
 
-                        <Combobox.Options static className="mt-4 max-h-[calc(100vh-12rem)] overflow-auto">
+                        <ComboboxOptions static className="mt-4 max-h-[calc(100vh-12rem)] overflow-auto">
                           {renderOptions()}
-                        </Combobox.Options>
+                        </ComboboxOptions>
                       </Combobox>
                     </div>
-                  </Dialog.Panel>
+                  </DialogPanel>
                 </div>
-              </Transition.Child>
+              </TransitionChild>
             </div>
           </Dialog>
         </Transition>
