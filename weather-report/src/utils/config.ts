@@ -14,9 +14,24 @@ const parseSeconds = (value: string | undefined, defaultSeconds: number): number
   return isNaN(parsed) ? defaultSeconds * 1000 : parsed * 1000;
 };
 
+/**
+ * Build Forecast API base URL from host and port environment variables
+ */
+const getApiBaseUrl = (): string => {
+  // First try the full URL if provided
+  if (import.meta.env.VITE_FORECAST_API_BASE_URL) {
+    return import.meta.env.VITE_FORECAST_API_BASE_URL;
+  }
+
+  // Otherwise construct from host and port
+  const apiHost = import.meta.env.VITE_FORECAST_API_HOST || 'localhost';
+  const apiPort = import.meta.env.VITE_FORECAST_API_PORT || '8000';
+  return `http://${apiHost}:${apiPort}`;
+};
+
 export const config = {
   /** API base URL */
-  apiBaseUrl: import.meta.env.VITE_API_SERVICE_BASE_URL || 'http://localhost:8000',
+  apiBaseUrl: getApiBaseUrl(),
 
   /** Default city to select */
   defaultCity: import.meta.env.VITE_DEFAULT_CITY || 'Seattle',

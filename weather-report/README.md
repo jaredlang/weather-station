@@ -1,73 +1,114 @@
-# React + TypeScript + Vite
+# Weather Station
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, minimalist weather reporting website built with React, TypeScript, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🎵 **Audio Playback** - Play weather forecast audio with custom controls
+- 📝 **Transcript Display** - Read the forecast text alongside audio
+- 🔍 **City Search** - Search and select from available cities
+- ⏱️ **Real-time Age** - See how fresh the forecast is with live updates
+- 🎨 **Minimalist Design** - Apple Weather-inspired clean aesthetic
+- 📱 **Mobile-First** - Responsive design optimized for all devices
+- 🌙 **Dark Mode** - Automatic dark mode support
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Navigate to frontend directory
+cd frontend
 
-## Expanding the ESLint configuration
+# Install dependencies
+npm install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The app will be available at `http://localhost:3000`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Prerequisites
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js (v18 or higher)
+- Weather API backend running (default: `http://localhost:8000`, configurable via environment variables)
+
+## Project Structure
+
 ```
+weather-station/
+├── frontend/           # React frontend application
+│   ├── src/
+│   │   ├── api/       # API client and endpoints
+│   │   ├── components/# React components
+│   │   ├── hooks/     # Custom React hooks
+│   │   ├── store/     # State management
+│   │   └── utils/     # Utility functions
+│   └── package.json
+└── weather-forecast-openapi.json  # API specification
+```
+
+## Technologies
+
+- **React 18** + **TypeScript** - Type-safe UI development
+- **Vite** - Lightning-fast build tool
+- **Tailwind CSS v4** - Modern CSS framework
+- **TanStack Query** - Data fetching and caching
+- **Zustand** - Lightweight state management
+- **Framer Motion** - Smooth animations
+- **Headless UI** - Accessible component primitives
+
+## API Integration
+
+The frontend consumes the Weather Forecast API:
+
+- `GET /weather/{city}` - Latest forecast with audio
+- `GET /weather/{city}/history` - Forecast history
+- `GET /stats/` - Storage statistics
+- `GET /health/` - Service health check
+
+## Development
+
+```bash
+cd frontend
+
+# Development
+npm run dev
+
+# Type checking
+npm run type-check
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Environment Configuration
+
+Create `frontend/.env.local`:
+
+```
+# Backend Forecast API Configuration
+# For local development: use VITE_FORECAST_API_HOST and VITE_FORECAST_API_PORT
+VITE_FORECAST_API_HOST=localhost
+VITE_FORECAST_API_PORT=8000
+
+# For production: use VITE_FORECAST_API_BASE_URL with your deployed backend URL
+# VITE_FORECAST_API_BASE_URL=https://your-backend-api.cloud.run.app
+
+# Application Settings
+VITE_DEFAULT_CITY=Seattle
+
+# Cache configuration (in seconds)
+VITE_FORECAST_CACHE_DURATION=600
+
+# Retry configuration (in seconds)
+VITE_FORECAST_RETRY_DELAY=120
+```
+
+**Note**: If you need to change the backend port, simply update `VITE_FORECAST_API_PORT` in your `.env.local` file. All proxy configurations and API calls will automatically use the new port.
+
+## License
+
+MIT
