@@ -14,6 +14,7 @@ interface AppState {
   setSelectedCity: (city: string | null) => void;
   addUnavailableCity: (city: string) => void;
   markCityAsAvailable: (city: string, timestamp: string) => void;
+  removeCity: (city: string) => void;
   getCityStatus: (city: string) => CityAvailability | null;
   setTheme: (theme: 'light' | 'dark' | 'auto') => void;
 }
@@ -47,6 +48,16 @@ export const useAppStore = create<AppState>()(
               ...state.cityAvailability,
               [city]: { status: 'available', timestamp },
             },
+          };
+        }),
+      removeCity: (city) =>
+        set((state) => {
+          const newAvailability = { ...state.cityAvailability };
+          delete newAvailability[city];
+          return {
+            unavailableCities: state.unavailableCities.filter((c) => c !== city),
+            cityAvailability: newAvailability,
+            selectedCity: state.selectedCity === city ? null : state.selectedCity,
           };
         }),
       getCityStatus: (city) => {

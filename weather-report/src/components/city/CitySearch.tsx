@@ -19,7 +19,7 @@ import './CitySearch.css';
 
 export const CitySearch = () => {
   const { data: statsData } = useStats();
-  const { selectedCity, setSelectedCity, unavailableCities, getCityStatus } =
+  const { selectedCity, setSelectedCity, unavailableCities, getCityStatus, removeCity } =
     useAppStore();
   const [query, setQuery] = useState('');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -93,6 +93,12 @@ export const CitySearch = () => {
     setQuery('');
   };
 
+  const handleDeleteCity = (e: React.MouseEvent, city: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    removeCity(city);
+  };
+
   // Get status label for a city
   const getCityStatusLabel = (city: string): string | null => {
     const status = getCityStatus(city);
@@ -111,19 +117,20 @@ export const CitySearch = () => {
     filteredCities.length > 0 &&
       filteredCities.map((city) => {
         const statusLabel = getCityStatusLabel(city);
+        const hasStatus = getCityStatus(city) !== null;
         return (
           <ComboboxOption
             key={city}
             value={city}
             className={({ active }) =>
-              `cursor-pointer select-none relative py-3 pl-10 pr-4 ${
+              `cursor-pointer select-none relative py-3 pl-10 pr-10 ${
                 active ? 'bg-apple-blue/10 dark:bg-apple-darkblue/10' : ''
               }`
             }
           >
             {({ selected }) => (
               <>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span
                     className={`city-option-text ${
                       selected ? 'selected' : 'not-selected'
@@ -131,15 +138,27 @@ export const CitySearch = () => {
                   >
                     {formatCityName(city)}
                   </span>
-                  {statusLabel && (
-                    <span className={`city-status-label ${
-                      statusLabel === 'Being Prepared'
-                        ? 'preparing'
-                        : 'normal'
-                    }`}>
-                      {statusLabel}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {statusLabel && (
+                      <span className={`city-status-label ${
+                        statusLabel === 'Being Prepared'
+                          ? 'preparing'
+                          : 'normal'
+                      }`}>
+                        {statusLabel}
+                      </span>
+                    )}
+                    {hasStatus && (
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteCity(e, city)}
+                        className="p-1 text-apple-gray hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
+                        aria-label={`Delete ${city}`}
+                      >
+                        <XMarkIcon className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {selected && (
                   <CheckIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-blue dark:text-apple-darkblue" />
