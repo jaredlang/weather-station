@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { WeatherHero } from '@/components/weather/WeatherHero';
 import { ForecastCard } from '@/components/weather/ForecastCard';
@@ -23,7 +24,20 @@ const queryClient = new QueryClient({
 
 function WeatherContent() {
   const selectedCity = useAppStore((state) => state.selectedCity);
+  const addUnavailableCity = useAppStore((state) => state.addUnavailableCity);
   const { data, isLoading, isError, error, refetch } = useWeather(selectedCity);
+
+  // Mark city as unavailable when 404 occurs
+  useEffect(() => {
+    if (isError && selectedCity) {
+      const errorMessage = (error as Error)?.message?.toLowerCase() || '';
+      const is404Error = errorMessage.includes('forecast not found');
+
+      if (is404Error) {
+        addUnavailableCity(selectedCity);
+      }
+    }
+  }, [isError, error, selectedCity, addUnavailableCity]);
 
   if (!selectedCity) {
     return (

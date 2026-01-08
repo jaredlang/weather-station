@@ -16,7 +16,7 @@ const parseSeconds = (value: string | undefined, defaultSeconds: number): number
 
 export const config = {
   /** API base URL */
-  apiBaseUrl: import.meta.env.VITE_API_SERVICE_BASE_URL || 'http://localhost:8080',
+  apiBaseUrl: import.meta.env.VITE_API_SERVICE_BASE_URL || 'http://localhost:8000',
 
   /** Default city to select */
   defaultCity: import.meta.env.VITE_DEFAULT_CITY || 'Seattle',

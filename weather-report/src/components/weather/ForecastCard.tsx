@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import type { ForecastData } from '@/api/types';
 import { AudioPlayer } from './AudioPlayer';
 import { TranscriptDisplay } from './TranscriptDisplay';
-import { useForecastAge } from '@/hooks/useForecastAge';
+import { ForecastAgeBadge } from './ForecastAgeBadge';
 import { formatBytes, formatCityName } from '@/utils/formatters';
 
 interface ForecastCardProps {
@@ -11,7 +11,6 @@ interface ForecastCardProps {
 }
 
 export const ForecastCard = ({ forecast, city }: ForecastCardProps) => {
-  const age = useForecastAge(forecast.forecast_at);
   const audioSize = forecast.metadata.sizes.audio_base64 || 0;
 
   return (
@@ -27,11 +26,7 @@ export const ForecastCard = ({ forecast, city }: ForecastCardProps) => {
           <h2 className="text-2xl font-semibold tracking-tight text-apple-dark dark:text-apple-light">
             {formatCityName(city)}
           </h2>
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-3 py-1 rounded-full bg-apple-blue/10 dark:bg-apple-darkblue/10 text-apple-blue dark:text-apple-darkblue font-medium">
-              {age}
-            </span>
-          </div>
+          <ForecastAgeBadge forecastAt={forecast.forecast_at} />
         </div>
 
         {/* Audio Player */}

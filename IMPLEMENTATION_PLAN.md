@@ -354,4 +354,4 @@ weather-station/
 
 **Estimated Development Time**: 4-6 days for MVP, 2-3 weeks for full polish
 
-**Critical Dependencies**: Backend API at localhost:8080 must be running and accessible
+**Critical Dependencies**: Backend API at localhost:8000 must be running and accessible

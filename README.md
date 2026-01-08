@@ -30,7 +30,7 @@ The app will be available at `http://localhost:3000`
 ## Prerequisites
 
 - Node.js (v18 or higher)
-- Weather API backend running at `http://localhost:8080`
+- Weather API backend running at `http://localhost:8000`
 
 ## Project Structure
 
@@ -89,7 +89,7 @@ npm run preview
 Create `frontend/.env.local`:
 
 ```
-VITE_API_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8000
 VITE_DEFAULT_CITY=Seattle
 ```
 
