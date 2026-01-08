@@ -29,7 +29,7 @@ export const useAppStore = create<AppState>()(
       setSelectedCity: (city) => set({ selectedCity: city }),
       addUnavailableCity: (city) =>
         set((state) => {
-          if (state.unavailableCities.includes(city)) {
+          if (state.unavailableCities.some((c) => c.toLowerCase() === city.toLowerCase())) {
             return state;
           }
           return {
@@ -43,7 +43,7 @@ export const useAppStore = create<AppState>()(
       markCityAsAvailable: (city, timestamp) =>
         set((state) => {
           return {
-            unavailableCities: state.unavailableCities.filter((c) => c !== city),
+            unavailableCities: state.unavailableCities.filter((c) => c.toLowerCase() !== city.toLowerCase()),
             cityAvailability: {
               ...state.cityAvailability,
               [city]: { status: 'available', timestamp },
@@ -53,15 +53,26 @@ export const useAppStore = create<AppState>()(
       removeCity: (city) =>
         set((state) => {
           const newAvailability = { ...state.cityAvailability };
-          delete newAvailability[city];
+          // Case-insensitive deletion
+          const keyToDelete = Object.keys(newAvailability).find(
+            (k) => k.toLowerCase() === city.toLowerCase()
+          );
+          if (keyToDelete) {
+            delete newAvailability[keyToDelete];
+          }
           return {
-            unavailableCities: state.unavailableCities.filter((c) => c !== city),
+            unavailableCities: state.unavailableCities.filter((c) => c.toLowerCase() !== city.toLowerCase()),
             cityAvailability: newAvailability,
-            selectedCity: state.selectedCity === city ? null : state.selectedCity,
+            selectedCity: state.selectedCity?.toLowerCase() === city.toLowerCase() ? null : state.selectedCity,
           };
         }),
       getCityStatus: (city) => {
-        return get().cityAvailability[city] || null;
+        const availability = get().cityAvailability;
+        // Case-insensitive lookup
+        const key = Object.keys(availability).find(
+          (k) => k.toLowerCase() === city.toLowerCase()
+        );
+        return key ? availability[key] : null;
       },
       setTheme: (theme) => set({ theme }),
     }),

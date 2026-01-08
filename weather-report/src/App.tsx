@@ -42,7 +42,7 @@ function WeatherContent() {
 
     // Check if this city now has a forecast in the stats
     const cityStats = statsData.statistics.city_breakdown.find(
-      (c) => c.city === selectedCity
+      (c) => c.city.toLowerCase() === selectedCity.toLowerCase()
     );
 
     if (cityStats?.latest_forecast) {

@@ -30,7 +30,7 @@ export const CitySearch = () => {
 
   const availableCities = [
     ...allCities,
-    ...unavailableCities.filter((city) => !allCities.includes(city)),
+    ...unavailableCities.filter((city) => !allCities.some((c) => c.toLowerCase() === city.toLowerCase())),
   ];
 
   // Configure fuzzy search with Fuse.js
