@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
@@ -7,8 +7,10 @@ import { ForecastCard } from '@/components/weather/ForecastCard';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { ErrorMessage } from '@/components/common/ErrorMessage';
 import { useWeather } from '@/hooks/useWeather';
+import { useStats } from '@/hooks/useStats';
 import { useAppStore } from '@/store/appStore';
 import { config } from '@/utils/config';
+import { queryKeys } from '@/api/queryKeys';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,9 +25,32 @@ const queryClient = new QueryClient({
 });
 
 function WeatherContent() {
+  const queryClient = useQueryClient();
   const selectedCity = useAppStore((state) => state.selectedCity);
   const addUnavailableCity = useAppStore((state) => state.addUnavailableCity);
-  const { data, isLoading, isError, error, refetch } = useWeather(selectedCity);
+  const markCityAsAvailable = useAppStore((state) => state.markCityAsAvailable);
+  const getCityStatus = useAppStore((state) => state.getCityStatus);
+  const { data, isLoading, isError, error } = useWeather(selectedCity);
+  const { data: statsData } = useStats();
+
+  // Monitor stats and refetch weather when a preparing city becomes available
+  useEffect(() => {
+    if (!selectedCity || !statsData) return;
+
+    const cityStatus = getCityStatus(selectedCity);
+    if (cityStatus?.status !== 'preparing') return;
+
+    // Check if this city now has a forecast in the stats
+    const cityStats = statsData.statistics.city_breakdown.find(
+      (c) => c.city === selectedCity
+    );
+
+    if (cityStats?.latest_forecast) {
+      // City is now available! Mark it and refetch the weather data
+      markCityAsAvailable(selectedCity, cityStats.latest_forecast);
+      queryClient.invalidateQueries({ queryKey: queryKeys.weather.city(selectedCity) });
+    }
+  }, [statsData, selectedCity, getCityStatus, markCityAsAvailable, queryClient]);
 
   // Mark city as unavailable when 404 occurs
   useEffect(() => {
@@ -38,6 +63,13 @@ function WeatherContent() {
       }
     }
   }, [isError, error, selectedCity, addUnavailableCity]);
+
+  // Mark city as available when forecast loads successfully
+  useEffect(() => {
+    if (data && selectedCity) {
+      markCityAsAvailable(selectedCity, data.forecast.forecast_at);
+    }
+  }, [data, selectedCity, markCityAsAvailable]);
 
   if (!selectedCity) {
     return (
@@ -59,7 +91,7 @@ function WeatherContent() {
   }
 
   if (isError) {
-    return <ErrorMessage error={error as Error} onRetry={() => refetch()} />;
+    return <ErrorMessage error={error as Error} />;
   }
 
   if (!data) {
@@ -79,9 +111,9 @@ function WeatherContent() {
 function App() {
   return (
     <ErrorBoundary
-      FallbackComponent={({ error, resetErrorBoundary }) => (
+      FallbackComponent={({ error }) => (
         <div className="min-h-screen flex items-center justify-center bg-apple-light dark:bg-black">
-          <ErrorMessage error={error} onRetry={resetErrorBoundary} />
+          <ErrorMessage error={error} />
         </div>
       )}
     >

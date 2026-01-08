@@ -6,6 +6,6 @@ export const useStats = () => {
   return useQuery({
     queryKey: queryKeys.stats,
     queryFn: getStats,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };

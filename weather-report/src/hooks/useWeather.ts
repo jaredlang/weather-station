@@ -9,8 +9,7 @@ export const useWeather = (city: string | null, language?: string) => {
     queryFn: () => getLatestForecast(city!, language),
     enabled: !!city,
     staleTime: config.cacheDuration,
-    retry: 1,
-    retryDelay: config.retryDelay,
+    retry: false, // No retry - backend starts preparing forecast on first request
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });

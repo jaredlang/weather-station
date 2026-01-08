@@ -1,9 +1,8 @@
 interface ErrorMessageProps {
   error: Error;
-  onRetry?: () => void;
 }
 
-export const ErrorMessage = ({ error, onRetry }: ErrorMessageProps) => {
+export const ErrorMessage = ({ error }: ErrorMessageProps) => {
   // Check if this is a "forecast not found" error (404)
   const isForecastNotFound = error.message.toLowerCase().includes('forecast not found');
 
@@ -12,9 +11,9 @@ export const ErrorMessage = ({ error, onRetry }: ErrorMessageProps) => {
       <div className={`text-center ${isForecastNotFound ? 'text-apple-dark dark:text-apple-light' : 'text-red-500 dark:text-red-400'}`}>
         {isForecastNotFound ? (
           <>
-            <p className="text-lg font-medium">My apologies</p>
+            <p className="text-lg font-medium">We are preparing the forecast as requested.</p>
             <p className="text-base text-apple-gray mt-2 max-w-md">
-              The latest weather report is being prepared. Please check again in a few minutes.
+              Please check back in a few minutes.
             </p>
           </>
         ) : (
@@ -24,14 +23,6 @@ export const ErrorMessage = ({ error, onRetry }: ErrorMessageProps) => {
           </>
         )}
       </div>
-      {onRetry && (
-        <button
-          onClick={onRetry}
-          className="px-4 py-2 bg-apple-blue dark:bg-apple-darkblue text-white rounded-lg hover:opacity-90 transition-opacity"
-        >
-          Try Again
-        </button>
-      )}
     </div>
   );
 };

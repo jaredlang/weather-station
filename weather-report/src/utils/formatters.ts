@@ -56,3 +56,29 @@ export const formatCityName = (city: string): string => {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };
+
+/**
+ * Formats a timestamp to a short readable format
+ * @param timestamp - ISO 8601 timestamp
+ * @returns Short formatted timestamp (e.g., "2:30pm", "Jan 7")
+ */
+export const formatShortTimestamp = (timestamp: string): string => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+
+  if (isToday) {
+    // Show time if today
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    const displayHours = hours % 12 || 12;
+    const displayMinutes = minutes.toString().padStart(2, '0');
+    return `${displayHours}:${displayMinutes}${ampm}`;
+  } else {
+    // Show date if not today
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const day = date.getDate();
+    return `${month} ${day}`;
+  }
+};

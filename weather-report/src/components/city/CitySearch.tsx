@@ -3,20 +3,24 @@ import { Combobox, Transition, Dialog } from '@headlessui/react';
 import { MagnifyingGlassIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useStats } from '@/hooks/useStats';
 import { useAppStore } from '@/store/appStore';
-import { formatCityName } from '@/utils/formatters';
+import { formatCityName, formatShortTimestamp } from '@/utils/formatters';
 import Fuse from 'fuse.js';
 
 export const CitySearch = () => {
   const { data: statsData } = useStats();
-  const { selectedCity, setSelectedCity, addRecentCity, recentCities, unavailableCities } =
+  const { selectedCity, setSelectedCity, addRecentCity, recentCities, unavailableCities, getCityStatus } =
     useAppStore();
   const [query, setQuery] = useState('');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const availableCities =
-    statsData?.statistics.city_breakdown
-      .map((c) => c.city)
-      .filter((city) => !unavailableCities.includes(city)) || [];
+  // Include all cities from stats, plus unavailable cities that are being prepared
+  const allCities =
+    statsData?.statistics.city_breakdown.map((c) => c.city) || [];
+
+  const availableCities = [
+    ...allCities,
+    ...unavailableCities.filter((city) => !allCities.includes(city)),
+  ];
 
   // Configure fuzzy search with Fuse.js
   const fuse = useMemo(
@@ -30,10 +34,15 @@ export const CitySearch = () => {
     [availableCities]
   );
 
-  const filteredCities =
-    query === ''
+  // Filter cities, excluding recent cities to avoid duplicates in dropdown
+  const filteredCities = useMemo(() => {
+    const cities = query === ''
       ? availableCities
       : fuse.search(query).map((result) => result.item);
+
+    // Remove cities already in recent to avoid showing them twice
+    return cities.filter((city) => !recentCities.includes(city));
+  }, [query, availableCities, fuse, recentCities]);
 
   const handleSelect = (city: string | null) => {
     if (city) {
@@ -41,6 +50,25 @@ export const CitySearch = () => {
       addRecentCity(city);
       setQuery('');
       setIsMobileOpen(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && query.trim() !== '') {
+      // If user presses Enter with a custom city name
+      const trimmedQuery = query.trim();
+      // Check if the query matches an existing city (case-insensitive)
+      const existingCity = availableCities.find(
+        (city) => city.toLowerCase() === trimmedQuery.toLowerCase()
+      );
+
+      if (existingCity) {
+        // Select the existing city
+        handleSelect(existingCity);
+      } else if (filteredCities.length === 0) {
+        // No matches found, treat as a new custom city
+        handleSelect(trimmedQuery);
+      }
     }
   };
 
@@ -58,6 +86,19 @@ export const CitySearch = () => {
     setQuery('');
   };
 
+  // Get status label for a city
+  const getCityStatusLabel = (city: string): string | null => {
+    const status = getCityStatus(city);
+    if (!status) return null;
+
+    if (status.status === 'preparing') {
+      return 'Being Prepared';
+    } else if (status.status === 'available' && status.timestamp) {
+      return formatShortTimestamp(status.timestamp);
+    }
+    return null;
+  };
+
   // Shared options rendering component
   const renderOptions = () => [
     recentCities.length > 0 && query === '' && (
@@ -66,32 +107,46 @@ export const CitySearch = () => {
       </div>
     ),
     query === '' &&
-      recentCities.map((city) => (
-        <Combobox.Option
-          key={`recent-${city}`}
-          value={city}
-          className={({ active }) =>
-            `cursor-pointer select-none relative py-3 pl-10 pr-4 ${
-              active ? 'bg-apple-blue/10 dark:bg-apple-darkblue/10' : ''
-            }`
-          }
-        >
-          {({ selected }) => (
-            <>
-              <span
-                className={`block truncate ${
-                  selected ? 'font-semibold' : 'font-normal'
-                }`}
-              >
-                {formatCityName(city)}
-              </span>
-              {selected && (
-                <CheckIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-blue dark:text-apple-darkblue" />
-              )}
-            </>
-          )}
-        </Combobox.Option>
-      )),
+      recentCities.map((city) => {
+        const statusLabel = getCityStatusLabel(city);
+        return (
+          <Combobox.Option
+            key={`recent-${city}`}
+            value={city}
+            className={({ active }) =>
+              `cursor-pointer select-none relative py-3 pl-10 pr-4 ${
+                active ? 'bg-apple-blue/10 dark:bg-apple-darkblue/10' : ''
+              }`
+            }
+          >
+            {({ selected }) => (
+              <>
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`block truncate ${
+                      selected ? 'font-semibold' : 'font-normal'
+                    }`}
+                  >
+                    {formatCityName(city)}
+                  </span>
+                  {statusLabel && (
+                    <span className={`ml-2 text-xs ${
+                      statusLabel === 'Being Prepared'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-apple-gray'
+                    }`}>
+                      {statusLabel}
+                    </span>
+                  )}
+                </div>
+                {selected && (
+                  <CheckIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-blue dark:text-apple-darkblue" />
+                )}
+              </>
+            )}
+          </Combobox.Option>
+        );
+      }),
     filteredCities.length > 0 &&
       recentCities.length > 0 &&
       query === '' && (
@@ -100,36 +155,63 @@ export const CitySearch = () => {
         </div>
       ),
     filteredCities.length > 0 &&
-      filteredCities.map((city) => (
-        <Combobox.Option
-          key={city}
-          value={city}
-          className={({ active }) =>
-            `cursor-pointer select-none relative py-3 pl-10 pr-4 ${
-              active ? 'bg-apple-blue/10 dark:bg-apple-darkblue/10' : ''
-            }`
-          }
-        >
-          {({ selected }) => (
-            <>
-              <span
-                className={`block truncate ${
-                  selected ? 'font-semibold' : 'font-normal'
-                }`}
-              >
-                {formatCityName(city)}
-              </span>
-              {selected && (
-                <CheckIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-blue dark:text-apple-darkblue" />
-              )}
-            </>
-          )}
-        </Combobox.Option>
-      )),
+      filteredCities.map((city) => {
+        const statusLabel = getCityStatusLabel(city);
+        return (
+          <Combobox.Option
+            key={city}
+            value={city}
+            className={({ active }) =>
+              `cursor-pointer select-none relative py-3 pl-10 pr-4 ${
+                active ? 'bg-apple-blue/10 dark:bg-apple-darkblue/10' : ''
+              }`
+            }
+          >
+            {({ selected }) => (
+              <>
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`block truncate ${
+                      selected ? 'font-semibold' : 'font-normal'
+                    }`}
+                  >
+                    {formatCityName(city)}
+                  </span>
+                  {statusLabel && (
+                    <span className={`ml-2 text-xs ${
+                      statusLabel === 'Being Prepared'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-apple-gray'
+                    }`}>
+                      {statusLabel}
+                    </span>
+                  )}
+                </div>
+                {selected && (
+                  <CheckIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-blue dark:text-apple-darkblue" />
+                )}
+              </>
+            )}
+          </Combobox.Option>
+        );
+      }),
     filteredCities.length === 0 && query !== '' && (
-      <div key="no-results" className="py-3 px-4 text-apple-gray text-center">
-        No cities found
-      </div>
+      <Combobox.Option
+        key="add-custom-city"
+        value={query.trim()}
+        className={({ active }) =>
+          `cursor-pointer select-none relative py-3 pl-4 pr-4 ${
+            active ? 'bg-apple-blue/10 dark:bg-apple-darkblue/10' : ''
+          }`
+        }
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-apple-gray">Add:</span>
+          <span className="font-semibold text-apple-dark dark:text-apple-light">
+            {formatCityName(query.trim())}
+          </span>
+        </div>
+      </Combobox.Option>
     ),
   ];
 
@@ -146,6 +228,7 @@ export const CitySearch = () => {
                 placeholder="Search for a city..."
                 displayValue={(city: string) => formatCityName(city)}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
               {selectedCity && (
                 <button
@@ -234,6 +317,7 @@ export const CitySearch = () => {
                             placeholder="Search for a city..."
                             displayValue={(city: string) => formatCityName(city)}
                             onChange={(e) => setQuery(e.target.value)}
+                            onKeyDown={handleKeyDown}
                             autoFocus
                           />
                         </div>
