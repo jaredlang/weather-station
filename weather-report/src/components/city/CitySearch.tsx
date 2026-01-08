@@ -9,7 +9,7 @@ import './CitySearch.css';
 
 export const CitySearch = () => {
   const { data: statsData } = useStats();
-  const { selectedCity, setSelectedCity, addRecentCity, recentCities, unavailableCities, getCityStatus } =
+  const { selectedCity, setSelectedCity, unavailableCities, getCityStatus } =
     useAppStore();
   const [query, setQuery] = useState('');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -35,20 +35,16 @@ export const CitySearch = () => {
     [availableCities]
   );
 
-  // Filter cities, excluding recent cities to avoid duplicates in dropdown
+  // Filter cities based on search query
   const filteredCities = useMemo(() => {
-    const cities = query === ''
+    return query === ''
       ? availableCities
       : fuse.search(query).map((result) => result.item);
-
-    // Remove cities already in recent to avoid showing them twice
-    return cities.filter((city) => !recentCities.includes(city));
-  }, [query, availableCities, fuse, recentCities]);
+  }, [query, availableCities, fuse]);
 
   const handleSelect = (city: string | null) => {
     if (city) {
       setSelectedCity(city);
-      addRecentCity(city);
       setQuery('');
       setIsMobileOpen(false);
     }
@@ -102,59 +98,6 @@ export const CitySearch = () => {
 
   // Shared options rendering component
   const renderOptions = () => [
-    recentCities.length > 0 && query === '' && (
-      <div key="recent-header" className="px-4 py-2 text-xs font-semibold text-apple-gray uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">
-        Recent
-      </div>
-    ),
-    query === '' &&
-      recentCities.map((city) => {
-        const statusLabel = getCityStatusLabel(city);
-        return (
-          <Combobox.Option
-            key={`recent-${city}`}
-            value={city}
-            className={({ active }) =>
-              `cursor-pointer select-none relative py-3 pl-10 pr-4 ${
-                active ? 'bg-apple-blue/10 dark:bg-apple-darkblue/10' : ''
-              }`
-            }
-          >
-            {({ selected }) => (
-              <>
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`city-option-text ${
-                      selected ? 'selected' : 'not-selected'
-                    }`}
-                  >
-                    {formatCityName(city)}
-                  </span>
-                  {statusLabel && (
-                    <span className={`city-status-label ${
-                      statusLabel === 'Being Prepared'
-                        ? 'preparing'
-                        : 'normal'
-                    }`}>
-                      {statusLabel}
-                    </span>
-                  )}
-                </div>
-                {selected && (
-                  <CheckIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-blue dark:text-apple-darkblue" />
-                )}
-              </>
-            )}
-          </Combobox.Option>
-        );
-      }),
-    filteredCities.length > 0 &&
-      recentCities.length > 0 &&
-      query === '' && (
-        <div key="all-cities-header" className="px-4 py-2 text-xs font-semibold text-apple-gray uppercase tracking-wide border-t border-b border-gray-200 dark:border-gray-700">
-          All Cities
-        </div>
-      ),
     filteredCities.length > 0 &&
       filteredCities.map((city) => {
         const statusLabel = getCityStatusLabel(city);

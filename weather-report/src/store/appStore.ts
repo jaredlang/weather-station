@@ -9,11 +9,9 @@ export interface CityAvailability {
 interface AppState {
   selectedCity: string | null;
   theme: 'light' | 'dark' | 'auto';
-  recentCities: string[];
   unavailableCities: string[];
   cityAvailability: Record<string, CityAvailability>; // Track city preparation status
   setSelectedCity: (city: string | null) => void;
-  addRecentCity: (city: string) => void;
   addUnavailableCity: (city: string) => void;
   markCityAsAvailable: (city: string, timestamp: string) => void;
   getCityStatus: (city: string) => CityAvailability | null;
@@ -25,15 +23,9 @@ export const useAppStore = create<AppState>()(
     (set, get) => ({
       selectedCity: null,
       theme: 'auto',
-      recentCities: [],
       unavailableCities: [],
       cityAvailability: {},
       setSelectedCity: (city) => set({ selectedCity: city }),
-      addRecentCity: (city) =>
-        set((state) => {
-          const filtered = state.recentCities.filter((c) => c !== city);
-          return { recentCities: [city, ...filtered].slice(0, 5) };
-        }),
       addUnavailableCity: (city) =>
         set((state) => {
           if (state.unavailableCities.includes(city)) {
@@ -45,7 +37,6 @@ export const useAppStore = create<AppState>()(
               ...state.cityAvailability,
               [city]: { status: 'preparing' },
             },
-            // Keep in recent cities so user can see it's being prepared
           };
         }),
       markCityAsAvailable: (city, timestamp) =>
