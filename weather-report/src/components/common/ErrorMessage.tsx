@@ -1,3 +1,5 @@
+import './ErrorMessage.css';
+
 interface ErrorMessageProps {
   error: Error;
 }
@@ -8,7 +10,7 @@ export const ErrorMessage = ({ error }: ErrorMessageProps) => {
 
   return (
     <div className="flex flex-col items-center justify-center p-8 space-y-4">
-      <div className={`text-center ${isForecastNotFound ? 'text-apple-dark dark:text-apple-light' : 'text-red-500 dark:text-red-400'}`}>
+      <div className={`error-message-container ${isForecastNotFound ? 'forecast-not-found' : 'error'}`}>
         {isForecastNotFound ? (
           <>
             <p className="text-lg font-medium">We are preparing the forecast as requested.</p>

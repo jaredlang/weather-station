@@ -5,6 +5,7 @@ import { useStats } from '@/hooks/useStats';
 import { useAppStore } from '@/store/appStore';
 import { formatCityName, formatShortTimestamp } from '@/utils/formatters';
 import Fuse from 'fuse.js';
+import './CitySearch.css';
 
 export const CitySearch = () => {
   const { data: statsData } = useStats();
@@ -123,17 +124,17 @@ export const CitySearch = () => {
               <>
                 <div className="flex items-center justify-between">
                   <span
-                    className={`block truncate ${
-                      selected ? 'font-semibold' : 'font-normal'
+                    className={`city-option-text ${
+                      selected ? 'selected' : 'not-selected'
                     }`}
                   >
                     {formatCityName(city)}
                   </span>
                   {statusLabel && (
-                    <span className={`ml-2 text-xs ${
+                    <span className={`city-status-label ${
                       statusLabel === 'Being Prepared'
-                        ? 'text-amber-600 dark:text-amber-400'
-                        : 'text-apple-gray'
+                        ? 'preparing'
+                        : 'normal'
                     }`}>
                       {statusLabel}
                     </span>
@@ -171,17 +172,17 @@ export const CitySearch = () => {
               <>
                 <div className="flex items-center justify-between">
                   <span
-                    className={`block truncate ${
-                      selected ? 'font-semibold' : 'font-normal'
+                    className={`city-option-text ${
+                      selected ? 'selected' : 'not-selected'
                     }`}
                   >
                     {formatCityName(city)}
                   </span>
                   {statusLabel && (
-                    <span className={`ml-2 text-xs ${
+                    <span className={`city-status-label ${
                       statusLabel === 'Being Prepared'
-                        ? 'text-amber-600 dark:text-amber-400'
-                        : 'text-apple-gray'
+                        ? 'preparing'
+                        : 'normal'
                     }`}>
                       {statusLabel}
                     </span>

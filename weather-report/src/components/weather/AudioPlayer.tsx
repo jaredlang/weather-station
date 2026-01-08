@@ -2,6 +2,7 @@ import { PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { formatDuration } from '@/utils/formatters';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import './AudioPlayer.css';
 
 interface AudioPlayerProps {
   audioBase64: string;
@@ -46,8 +47,8 @@ export const AudioPlayer = ({ audioBase64 }: AudioPlayerProps) => {
           onClick={handleProgressClick}
         >
           <div
-            className="h-full bg-apple-blue dark:bg-apple-darkblue transition-all"
-            style={{ width: `${(currentTime / duration) * 100}%` }}
+            className="audio-progress-fill"
+            style={{ '--progress-width': `${(currentTime / duration) * 100}%` } as React.CSSProperties}
           />
         </div>
 
