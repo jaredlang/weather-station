@@ -10,6 +10,7 @@ interface AppState {
   selectedCity: string | null;
   theme: 'light' | 'dark' | 'auto';
   unavailableCities: string[];
+  hiddenCities: string[]; // Cities user has explicitly hidden/deleted
   cityAvailability: Record<string, CityAvailability>; // Track city preparation status
   setSelectedCity: (city: string | null) => void;
   addUnavailableCity: (city: string) => void;
@@ -25,6 +26,7 @@ export const useAppStore = create<AppState>()(
       selectedCity: null,
       theme: 'auto',
       unavailableCities: [],
+      hiddenCities: [],
       cityAvailability: {},
       setSelectedCity: (city) => set({ selectedCity: city }),
       addUnavailableCity: (city) =>
@@ -34,6 +36,7 @@ export const useAppStore = create<AppState>()(
           }
           return {
             unavailableCities: [...state.unavailableCities, city],
+            hiddenCities: state.hiddenCities.filter((c) => c.toLowerCase() !== city.toLowerCase()),
             cityAvailability: {
               ...state.cityAvailability,
               [city]: { status: 'preparing' },
@@ -60,8 +63,15 @@ export const useAppStore = create<AppState>()(
           if (keyToDelete) {
             delete newAvailability[keyToDelete];
           }
+
+          // Add to hiddenCities if not already there
+          const isAlreadyHidden = state.hiddenCities.some(
+            (c) => c.toLowerCase() === city.toLowerCase()
+          );
+
           return {
             unavailableCities: state.unavailableCities.filter((c) => c.toLowerCase() !== city.toLowerCase()),
+            hiddenCities: isAlreadyHidden ? state.hiddenCities : [...state.hiddenCities, city],
             cityAvailability: newAvailability,
             selectedCity: state.selectedCity?.toLowerCase() === city.toLowerCase() ? null : state.selectedCity,
           };

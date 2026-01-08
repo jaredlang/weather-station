@@ -19,7 +19,7 @@ import './CitySearch.css';
 
 export const CitySearch = () => {
   const { data: statsData } = useStats();
-  const { selectedCity, setSelectedCity, unavailableCities, getCityStatus, removeCity } =
+  const { selectedCity, setSelectedCity, unavailableCities, hiddenCities, getCityStatus, removeCity } =
     useAppStore();
   const [query, setQuery] = useState('');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -31,7 +31,7 @@ export const CitySearch = () => {
   const availableCities = [
     ...allCities,
     ...unavailableCities.filter((city) => !allCities.some((c) => c.toLowerCase() === city.toLowerCase())),
-  ];
+  ].filter((city) => !hiddenCities.some((hidden) => hidden.toLowerCase() === city.toLowerCase()));
 
   // Configure fuzzy search with Fuse.js
   const fuse = useMemo(
@@ -93,7 +93,7 @@ export const CitySearch = () => {
     setQuery('');
   };
 
-  const handleDeleteCity = (e: React.MouseEvent, city: string) => {
+  const handleDeleteCity = (e: React.MouseEvent | React.PointerEvent, city: string) => {
     e.stopPropagation();
     e.preventDefault();
     removeCity(city);
@@ -151,7 +151,12 @@ export const CitySearch = () => {
                     {hasStatus && (
                       <button
                         type="button"
-                        onClick={(e) => handleDeleteCity(e, city)}
+                        onPointerDown={(e) => handleDeleteCity(e, city)}
+                        onMouseDown={(e) => handleDeleteCity(e, city)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                        }}
                         className="p-1 text-apple-gray hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
                         aria-label={`Delete ${city}`}
                       >

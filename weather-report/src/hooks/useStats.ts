@@ -7,5 +7,6 @@ export const useStats = () => {
     queryKey: queryKeys.stats,
     queryFn: getStats,
     staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
   });
 };

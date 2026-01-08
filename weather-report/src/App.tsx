@@ -29,28 +29,32 @@ function WeatherContent() {
   const selectedCity = useAppStore((state) => state.selectedCity);
   const addUnavailableCity = useAppStore((state) => state.addUnavailableCity);
   const markCityAsAvailable = useAppStore((state) => state.markCityAsAvailable);
-  const getCityStatus = useAppStore((state) => state.getCityStatus);
+  const cityAvailability = useAppStore((state) => state.cityAvailability);
   const { data, isLoading, isError, error } = useWeather(selectedCity);
   const { data: statsData } = useStats();
 
-  // Monitor stats and refetch weather when a preparing city becomes available
+  // Monitor stats and update all preparing cities when they become available
   useEffect(() => {
-    if (!selectedCity || !statsData) return;
+    if (!statsData) return;
 
-    const cityStatus = getCityStatus(selectedCity);
-    if (cityStatus?.status !== 'preparing') return;
+    // Check all cities with "preparing" status
+    Object.entries(cityAvailability).forEach(([city, availability]) => {
+      if (availability.status !== 'preparing') return;
 
-    // Check if this city now has a forecast in the stats
-    const cityStats = statsData.statistics.city_breakdown.find(
-      (c) => c.city.toLowerCase() === selectedCity.toLowerCase()
-    );
+      // Check if this city now has a forecast in the stats
+      const cityStats = statsData.statistics.city_breakdown.find(
+        (c) => c.city.toLowerCase() === city.toLowerCase()
+      );
 
-    if (cityStats?.latest_forecast) {
-      // City is now available! Mark it and refetch the weather data
-      markCityAsAvailable(selectedCity, cityStats.latest_forecast);
-      queryClient.invalidateQueries({ queryKey: queryKeys.weather.city(selectedCity) });
-    }
-  }, [statsData, selectedCity, getCityStatus, markCityAsAvailable, queryClient]);
+      if (cityStats?.latest_forecast) {
+        // City is now available! Mark it and refetch the weather data if it's selected
+        markCityAsAvailable(city, cityStats.latest_forecast);
+        if (selectedCity?.toLowerCase() === city.toLowerCase()) {
+          queryClient.invalidateQueries({ queryKey: queryKeys.weather.city(city) });
+        }
+      }
+    });
+  }, [statsData, cityAvailability, selectedCity, markCityAsAvailable, queryClient]);
 
   // Mark city as unavailable when 404 occurs
   useEffect(() => {
