@@ -105,7 +105,7 @@ ls -la dist/
 ```bash
 # Set variables
 PROJECT_ID="your-project-id"
-BUCKET_NAME="weather-station-frontend"
+BUCKET_NAME="whut-weather-station"
 REGION="us-central1"  # Choose based on your users' location
 
 # Create bucket

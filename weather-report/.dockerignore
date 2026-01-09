@@ -1,0 +1,30 @@
+# Local env files
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.example
+.env
+
+# Node / build artifacts
+node_modules/
+dist/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Deployment Scripts
+deploy-cloudrun.sh
+
+# Logs and temp
+*.log
+
+# git and coverage
+.git
+coverage
+
+# Optional: ignore production env if you manage it elsewhere
+# .env.production
