@@ -1,4 +1,4 @@
-# Local env files
+# Environment files (secrets should be set via Cloud Run)
 .env.local
 .env.*.local
 .env.development
@@ -16,8 +16,14 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Deployment Scripts
+# Deployment scripts
+build-and-push.sh
 deploy-cloudrun.sh
+
+# Documentation
+*.md
+docs/
+plans/
 
 # Logs and temp
 *.log
