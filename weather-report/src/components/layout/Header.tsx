@@ -9,7 +9,7 @@ export const Header = () => {
           <div className="flex items-center gap-3">
             <SunnyIcon className="w-8 h-8 text-yellow-500" />
             <h1 className="text-xl font-semibold tracking-tight text-apple-dark dark:text-apple-light">
-              WHUT Weather Station
+              WHUT Weather Service
             </h1>
           </div>
           <div className="flex-1 max-w-md">

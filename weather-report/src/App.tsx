@@ -80,10 +80,10 @@ function WeatherContent() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-light text-apple-dark dark:text-apple-light">
-            Welcome to Weather Station
+            Welcome to WHUT Weather Service
           </h2>
           <p className="text-apple-gray">
-            Search for a city to view the latest weather forecast
+            Search for a city to view the latest weather report
           </p>
         </div>
       </div>
