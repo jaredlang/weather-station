@@ -14,9 +14,6 @@ dist/
 build/
 *.tsbuildinfo
 
-# deployment files
-deploy-cloudrun.sh
-
 # Logs
 logs
 *.log
