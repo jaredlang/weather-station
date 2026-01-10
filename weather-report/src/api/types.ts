@@ -9,6 +9,7 @@ export interface WeatherResponse {
 export interface ForecastData {
   text: string;
   audio_base64: string;
+  picture_url?: string;
   forecast_at: string;
   expires_at: string;
   age_seconds: number;

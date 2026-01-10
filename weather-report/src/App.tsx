@@ -104,7 +104,7 @@ function WeatherContent() {
 
   return (
     <>
-      <WeatherHero city={data.city} />
+      <WeatherHero city={data.city} picture_url={data.forecast.picture_url} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <ForecastCard forecast={data.forecast} city={data.city} />
       </div>
