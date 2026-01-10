@@ -30,7 +30,7 @@ The app will be available at `http://localhost:3000`
 ## Prerequisites
 
 - Node.js (v18 or higher)
-- Weather API backend running (default: `http://localhost:8000`, configurable via environment variables)
+- Weather API backend running (default: `http://localhost:8200`, configurable via environment variables)
 
 ## Project Structure
 
@@ -92,7 +92,7 @@ Create `frontend/.env.local`:
 # Backend Forecast API Configuration
 # For local development: use VITE_FORECAST_API_HOST and VITE_FORECAST_API_PORT
 VITE_FORECAST_API_HOST=localhost
-VITE_FORECAST_API_PORT=8000
+VITE_FORECAST_API_PORT=8200
 
 # For production: use VITE_FORECAST_API_BASE_URL with your deployed backend URL
 # VITE_FORECAST_API_BASE_URL=https://your-backend-api.cloud.run.app

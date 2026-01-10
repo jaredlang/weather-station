@@ -6,7 +6,7 @@ import path from 'path'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const apiHost = env.VITE_FORECAST_API_HOST || 'localhost'
-  const apiPort = env.VITE_FORECAST_API_PORT || '8000'
+  const apiPort = env.VITE_FORECAST_API_PORT || '8200'
   const apiTarget = `http://${apiHost}:${apiPort}`
 
   return {

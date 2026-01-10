@@ -25,7 +25,7 @@ const getApiBaseUrl = (): string => {
 
   // Otherwise construct from host and port
   const apiHost = import.meta.env.VITE_FORECAST_API_HOST || 'localhost';
-  const apiPort = import.meta.env.VITE_FORECAST_API_PORT || '8000';
+  const apiPort = import.meta.env.VITE_FORECAST_API_PORT || '8200';
   return `http://${apiHost}:${apiPort}`;
 };
 
