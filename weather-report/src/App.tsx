@@ -1,13 +1,15 @@
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
 import { WeatherHero } from '@/components/weather/WeatherHero';
 import { ForecastCard } from '@/components/weather/ForecastCard';
+import { WeatherTileGrid } from '@/components/weather/WeatherTileGrid';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { ErrorMessage } from '@/components/common/ErrorMessage';
 import { useWeather } from '@/hooks/useWeather';
 import { useStats } from '@/hooks/useStats';
+import { useMultiCityWeather } from '@/hooks/useMultiCityWeather';
 import { useAppStore } from '@/store/appStore';
 import { config } from '@/utils/config';
 import { queryKeys } from '@/api/queryKeys';
@@ -27,11 +29,30 @@ const queryClient = new QueryClient({
 function WeatherContent() {
   const queryClient = useQueryClient();
   const selectedCity = useAppStore((state) => state.selectedCity);
+  const setSelectedCity = useAppStore((state) => state.setSelectedCity);
   const addUnavailableCity = useAppStore((state) => state.addUnavailableCity);
   const markCityAsAvailable = useAppStore((state) => state.markCityAsAvailable);
   const cityAvailability = useAppStore((state) => state.cityAvailability);
+  const unavailableCities = useAppStore((state) => state.unavailableCities);
+  const hiddenCities = useAppStore((state) => state.hiddenCities);
   const { data, isLoading, isError, error } = useWeather(selectedCity);
   const { data: statsData } = useStats();
+
+  // Build list of all cities for tile grid (from stats + preparing cities)
+  const allCities = useMemo(() => {
+    const statsCities = statsData?.statistics.city_breakdown.map((c) => c.city) || [];
+    // Add unavailable cities that aren't already in stats
+    const preparingCities = unavailableCities.filter(
+      (city) => !statsCities.some((c) => c.toLowerCase() === city.toLowerCase())
+    );
+    // Filter out hidden cities, with preparing cities first
+    return [...preparingCities, ...statsCities].filter(
+      (city) => !hiddenCities.some((hidden) => hidden.toLowerCase() === city.toLowerCase())
+    );
+  }, [statsData, unavailableCities, hiddenCities]);
+
+  // Fetch weather data for all cities (for tile grid)
+  const { data: cityWeatherData } = useMultiCityWeather(allCities);
 
   // Monitor stats and update all preparing cities when they become available
   useEffect(() => {
@@ -77,16 +98,10 @@ function WeatherContent() {
 
   if (!selectedCity) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-light text-apple-dark dark:text-apple-light">
-            Welcome to WHUT Weather Service
-          </h2>
-          <p className="text-apple-gray">
-            Search for a city to view the latest weather report
-          </p>
-        </div>
-      </div>
+      <WeatherTileGrid
+        cities={cityWeatherData}
+        onCitySelect={setSelectedCity}
+      />
     );
   }
 
