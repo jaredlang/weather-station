@@ -82,3 +82,15 @@ export const formatShortTimestamp = (timestamp: string): string => {
     return `${month} ${day}`;
   }
 };
+
+/**
+ * Formats a subreddit name for display
+ * @param subreddit - Subreddit name
+ * @returns Formatted subreddit name with r/ prefix
+ */
+export const formatSubredditName = (subreddit: string): string => {
+  if (!subreddit) return '';
+  // Remove r/ prefix if present, then add it back for consistency
+  const cleanName = subreddit.replace(/^r\//, '');
+  return `r/${cleanName}`;
+};

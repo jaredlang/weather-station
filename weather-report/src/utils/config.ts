@@ -29,9 +29,27 @@ const getApiBaseUrl = (): string => {
   return `http://${apiHost}:${apiPort}`;
 };
 
+/**
+ * Build News API base URL from host and port environment variables
+ */
+const getNewsApiBaseUrl = (): string => {
+  // First try the full URL if provided
+  if (import.meta.env.VITE_NEWS_API_BASE_URL) {
+    return import.meta.env.VITE_NEWS_API_BASE_URL;
+  }
+
+  // Otherwise construct from host and port
+  const apiHost = import.meta.env.VITE_NEWS_API_HOST || 'localhost';
+  const apiPort = import.meta.env.VITE_NEWS_API_PORT || '8300';
+  return `http://${apiHost}:${apiPort}`;
+};
+
 export const config = {
-  /** API base URL */
+  /** Weather API base URL */
   apiBaseUrl: getApiBaseUrl(),
+
+  /** News API base URL */
+  newsApiBaseUrl: getNewsApiBaseUrl(),
 
   /** Default city to select */
   defaultCity: import.meta.env.VITE_DEFAULT_CITY || 'Seattle',
