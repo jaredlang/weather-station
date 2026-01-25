@@ -33,7 +33,7 @@ export const WeatherHero = ({ city, picture_url }: WeatherHeroProps) => {
           {formatCityName(city)}
         </h1>
         <p className="mt-4 text-xl md:text-2xl font-light text-white/90">
-          Latest Weather Forecast
+          Latest Weather Report
         </p>
       </div>
     </div>
