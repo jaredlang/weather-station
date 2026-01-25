@@ -1,6 +1,6 @@
 import { useState, useMemo, Fragment } from 'react';
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react';
-import { MagnifyingGlassIcon, XMarkIcon, TrashIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, XMarkIcon, ClockIcon } from '@heroicons/react/24/outline';
 import Fuse from 'fuse.js';
 import { useAppStore } from '@/store/appStore';
 import { useNewsStats } from '@/hooks/useNewsStats';
@@ -87,7 +87,7 @@ export const SubredditSearch = ({ onSelect }: SubredditSearchProps) => {
     }
   };
 
-  const handleDelete = (e: React.MouseEvent, subreddit: string) => {
+  const handleDelete = (e: React.MouseEvent | React.PointerEvent, subreddit: string) => {
     e.stopPropagation();
     e.preventDefault();
     removeSubreddit(subreddit);
@@ -145,19 +145,26 @@ export const SubredditSearch = ({ onSelect }: SubredditSearchProps) => {
                         Preparing
                       </span>
                     )}
+                  </div>
+                  <div className="flex items-center gap-2">
                     {subreddit.timestamp && subreddit.status === 'available' && (
                       <span className="text-xs text-apple-gray">
                         {formatShortTimestamp(subreddit.timestamp)}
                       </span>
                     )}
+                    <button
+                      onPointerDown={(e) => handleDelete(e, subreddit.name)}
+                      onMouseDown={(e) => handleDelete(e, subreddit.name)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                      className="p-1 text-apple-gray hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
+                      aria-label={`Remove ${subreddit.name}`}
+                    >
+                      <XMarkIcon className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    onClick={(e) => handleDelete(e, subreddit.name)}
-                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-opacity"
-                    aria-label={`Remove ${subreddit.name}`}
-                  >
-                    <TrashIcon className="w-4 h-4 text-red-500" />
-                  </button>
                 </ComboboxOption>
               ))}
               {query.trim() && filteredSubreddits.length === 0 && (
@@ -271,13 +278,20 @@ export const SubredditSearch = ({ onSelect }: SubredditSearchProps) => {
                               </span>
                             )}
                           </div>
-                          <button
-                            onClick={(e) => handleDelete(e, subreddit.name)}
-                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded"
-                            aria-label={`Remove ${subreddit.name}`}
-                          >
-                            <TrashIcon className="w-4 h-4 text-red-500" />
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onPointerDown={(e) => handleDelete(e, subreddit.name)}
+                              onMouseDown={(e) => handleDelete(e, subreddit.name)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                              }}
+                              className="p-1 text-apple-gray hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
+                              aria-label={`Remove ${subreddit.name}`}
+                            >
+                              <XMarkIcon className="w-4 h-4" />
+                            </button>
+                          </div>
                         </button>
                       ))}
                       {query.trim() && filteredSubreddits.length === 0 && (
