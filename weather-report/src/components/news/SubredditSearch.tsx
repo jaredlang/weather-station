@@ -7,7 +7,7 @@ import { useNewsStats } from '@/hooks/useNewsStats';
 import { formatSubredditName, formatShortTimestamp } from '@/utils/formatters';
 
 interface SubredditSearchProps {
-  onSelect: (subreddit: string) => void;
+  onSelect: (subreddit: string | null) => void;
 }
 
 interface SubredditOption {
@@ -20,6 +20,7 @@ export const SubredditSearch = ({ onSelect }: SubredditSearchProps) => {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const { data: statsData } = useNewsStats();
+  const selectedSubreddit = useAppStore((state) => state.selectedSubreddit);
   const subredditAvailability = useAppStore((state) => state.subredditAvailability);
   const unavailableSubreddits = useAppStore((state) => state.unavailableSubreddits);
   const hiddenSubreddits = useAppStore((state) => state.hiddenSubreddits);
@@ -92,6 +93,11 @@ export const SubredditSearch = ({ onSelect }: SubredditSearchProps) => {
     removeSubreddit(subreddit);
   };
 
+  const handleClear = () => {
+    onSelect(null);
+    setQuery('');
+  };
+
   // Desktop combobox
   const DesktopSearch = () => (
     <Combobox value={null} onChange={handleSelect}>
@@ -99,9 +105,9 @@ export const SubredditSearch = ({ onSelect }: SubredditSearchProps) => {
         <div className="relative">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-apple-gray" />
           <ComboboxInput
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-apple-blue dark:focus:ring-apple-darkblue text-apple-dark dark:text-apple-light placeholder-apple-gray"
+            className="w-full pl-10 pr-10 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-apple-blue dark:focus:ring-apple-darkblue text-apple-dark dark:text-apple-light placeholder-apple-gray"
             placeholder="Search subreddit..."
-            displayValue={() => query}
+            displayValue={() => selectedSubreddit ? formatSubredditName(selectedSubreddit) : query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && query.trim() && filteredSubreddits.length === 0) {
@@ -109,6 +115,16 @@ export const SubredditSearch = ({ onSelect }: SubredditSearchProps) => {
               }
             }}
           />
+          {selectedSubreddit && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-apple-gray hover:text-apple-dark dark:hover:text-apple-light transition-colors"
+              aria-label="Clear subreddit selection"
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </button>
+          )}
         </div>
         <ComboboxOptions className="absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black/5">
           {filteredSubreddits.map((subreddit) => (
@@ -159,13 +175,31 @@ export const SubredditSearch = ({ onSelect }: SubredditSearchProps) => {
   // Mobile dialog
   const MobileSearch = () => (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        aria-label="Search subreddits"
-      >
-        <MagnifyingGlassIcon className="h-6 w-6 text-apple-gray" />
-      </button>
+      {selectedSubreddit ? (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="text-apple-dark dark:text-apple-light text-sm font-medium"
+          >
+            {formatSubredditName(selectedSubreddit)}
+          </button>
+          <button
+            onClick={handleClear}
+            className="text-apple-gray hover:text-apple-dark dark:hover:text-apple-light transition-colors"
+            aria-label="Clear subreddit selection"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Search subreddits"
+        >
+          <MagnifyingGlassIcon className="h-6 w-6 text-apple-gray" />
+        </button>
+      )}
 
       <Transition show={isOpen} as={Fragment}>
         <Dialog onClose={() => setIsOpen(false)} className="relative z-50">
