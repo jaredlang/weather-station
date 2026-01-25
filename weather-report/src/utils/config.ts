@@ -56,13 +56,13 @@ export const config = {
 
   /** Cache duration in milliseconds (how long data stays fresh) */
   cacheDuration: parseSeconds(
-    import.meta.env.VITE_FORECAST_CACHE_DURATION,
+    import.meta.env.VITE_REPORT_CACHE_DURATION,
     120 // 2 minutes default (in seconds)
   ),
 
   /** Retry delay in milliseconds (how long to wait before retrying) */
   retryDelay: parseSeconds(
-    import.meta.env.VITE_FORECAST_RETRY_DELAY,
+    import.meta.env.VITE_REPORT_RETRY_DELAY,
     120 // 2 minutes default (in seconds)
   ),
 } as const;

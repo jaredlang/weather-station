@@ -87,10 +87,10 @@ npm install
 
 # Create production environment file
 cat > .env.production << EOF
-VITE_API_SERVICE_BASE_URL=https://your-api-domain.com
+VITE_FORECAST_API_BASE_URL=https://your-api-domain.com
 VITE_DEFAULT_CITY=Seattle
-VITE_FORECAST_CACHE_DURATION=600
-VITE_FORECAST_RETRY_DELAY=120
+VITE_REPORT_CACHE_DURATION=600
+VITE_REPORT_RETRY_DELAY=120
 EOF
 
 # Build for production
@@ -320,16 +320,18 @@ RUN npm ci
 COPY . .
 
 # Build arguments for environment variables
-ARG VITE_API_SERVICE_BASE_URL
+ARG VITE_FORECAST_API_BASE_URL
+ARG VITE_NEWS_API_BASE_URL
 ARG VITE_DEFAULT_CITY=Seattle
-ARG VITE_FORECAST_CACHE_DURATION=600
-ARG VITE_FORECAST_RETRY_DELAY=120
+ARG VITE_REPORT_CACHE_DURATION=600
+ARG VITE_REPORT_RETRY_DELAY=120
 
 # Create .env file
-RUN echo "VITE_API_SERVICE_BASE_URL=${VITE_API_SERVICE_BASE_URL}" > .env.production
-RUN echo "VITE_DEFAULT_CITY=${VITE_DEFAULT_CITY}" >> .env.production
-RUN echo "VITE_FORECAST_CACHE_DURATION=${VITE_FORECAST_CACHE_DURATION}" >> .env.production
-RUN echo "VITE_FORECAST_RETRY_DELAY=${VITE_FORECAST_RETRY_DELAY}" >> .env.production
+RUN echo "VITE_FORECAST_API_BASE_URL=${VITE_FORECAST_API_BASE_URL}" > .env.production && \
+    echo "VITE_NEWS_API_BASE_URL=${VITE_NEWS_API_BASE_URL}" >> .env.production && \
+    echo "VITE_DEFAULT_CITY=${VITE_DEFAULT_CITY}" >> .env.production && \
+    echo "VITE_REPORT_CACHE_DURATION=${VITE_REPORT_CACHE_DURATION}" >> .env.production && \
+    echo "VITE_REPORT_RETRY_DELAY=${VITE_REPORT_RETRY_DELAY}" >> .env.production
 
 # Build application
 RUN npm run build
@@ -399,7 +401,8 @@ cd weather-report
 PROJECT_ID="your-project-id"
 REGION="us-central1"
 SERVICE_NAME="weather-station"
-API_URL="https://your-api-domain.com"
+API_URL="https://your-weather-api-domain.com"
+NEWS_API_URL="https://your-news-api-domain.com"
 
 # Build and deploy in one command
 gcloud run deploy $SERVICE_NAME \
@@ -412,8 +415,8 @@ gcloud run deploy $SERVICE_NAME \
     --cpu 1 \
     --min-instances 0 \
     --max-instances 10 \
-    --set-env-vars "VITE_API_SERVICE_BASE_URL=$API_URL" \
-    --set-build-env-vars "VITE_API_SERVICE_BASE_URL=$API_URL"
+    --set-env-vars "VITE_FORECAST_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL" \
+    --set-build-env-vars "VITE_FORECAST_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL"
 
 # Get the service URL
 gcloud run services describe $SERVICE_NAME \
@@ -443,7 +446,8 @@ set -e
 
 SERVICE_NAME="weather-station"
 REGION="us-central1"
-API_URL="https://your-api-domain.com"
+API_URL="https://your-weather-api-domain.com"
+NEWS_API_URL="https://your-news-api-domain.com"
 
 echo "Deploying to Cloud Run..."
 gcloud run deploy $SERVICE_NAME \
@@ -456,8 +460,8 @@ gcloud run deploy $SERVICE_NAME \
     --cpu 1 \
     --min-instances 0 \
     --max-instances 10 \
-    --set-env-vars "VITE_API_SERVICE_BASE_URL=$API_URL" \
-    --set-build-env-vars "VITE_API_SERVICE_BASE_URL=$API_URL"
+    --set-env-vars "VITE_FORECAST_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL" \
+    --set-build-env-vars "VITE_FORECAST_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL"
 
 echo "Deployment complete!"
 gcloud run services describe $SERVICE_NAME \
@@ -556,10 +560,11 @@ This creates [firebase.json](weather-report/firebase.json):
 Create [.env.production](weather-report/.env.production):
 
 ```bash
-VITE_API_SERVICE_BASE_URL=https://your-api-domain.com
+VITE_FORECAST_API_BASE_URL=https://your-weather-api-domain.com
+VITE_NEWS_API_BASE_URL=https://your-news-api-domain.com
 VITE_DEFAULT_CITY=Seattle
-VITE_FORECAST_CACHE_DURATION=600
-VITE_FORECAST_RETRY_DELAY=120
+VITE_REPORT_CACHE_DURATION=600
+VITE_REPORT_RETRY_DELAY=120
 ```
 
 ### Step 4: Deploy
@@ -622,7 +627,7 @@ runtime: nodejs18
 service: default
 
 env_variables:
-  VITE_API_SERVICE_BASE_URL: "https://your-api-domain.com"
+  VITE_FORECAST_API_BASE_URL: "https://your-api-domain.com"
   VITE_DEFAULT_CITY: "Seattle"
 
 handlers:
@@ -751,7 +756,7 @@ kubectl apply -f k8s/
 
 ### CORS Configuration
 
-Ensure your backend API allows requests from your frontend domain:
+Ensure your backend APIs (Weather and News) allow requests from your frontend domain:
 
 ```python
 # FastAPI example
@@ -830,7 +835,8 @@ steps:
     args: ['run', 'build']
     dir: 'weather-report'
     env:
-      - 'VITE_API_SERVICE_BASE_URL=${_API_URL}'
+      - 'VITE_FORECAST_API_BASE_URL=${_API_URL}'
+      - 'VITE_NEWS_API_BASE_URL=${_NEWS_API_URL}'
       - 'VITE_DEFAULT_CITY=${_DEFAULT_CITY}'
 
   # Deploy to Cloud Storage
@@ -873,7 +879,8 @@ steps:
 
 substitutions:
   _BUCKET_NAME: 'weather-station-frontend'
-  _API_URL: 'https://your-api-domain.com'
+  _API_URL: 'https://your-weather-api-domain.com'
+  _NEWS_API_URL: 'https://your-news-api-domain.com'
   _DEFAULT_CITY: 'Seattle'
 
 timeout: 600s
@@ -891,7 +898,7 @@ gcloud builds triggers create github \
     --repo-owner=your-username \
     --branch-pattern="^main$" \
     --build-config=cloudbuild.yaml \
-    --substitutions=_BUCKET_NAME="weather-station-frontend",_API_URL="https://your-api.com"
+    --substitutions=_BUCKET_NAME="weather-station-frontend",_API_URL="https://your-weather-api.com",_NEWS_API_URL="https://your-news-api.com"
 
 # Or for Cloud Run deployment
 gcloud builds triggers create github \
@@ -938,7 +945,8 @@ jobs:
       - name: Build
         working-directory: weather-report
         env:
-          VITE_API_SERVICE_BASE_URL: ${{ secrets.API_URL }}
+          VITE_FORECAST_API_BASE_URL: ${{ secrets.API_URL }}
+          VITE_NEWS_API_BASE_URL: ${{ secrets.NEWS_API_URL }}
           VITE_DEFAULT_CITY: Seattle
         run: npm run build
 
@@ -1035,7 +1043,7 @@ Add to [index.html](weather-report/index.html):
                script-src 'self' 'unsafe-inline' 'unsafe-eval';
                style-src 'self' 'unsafe-inline';
                img-src 'self' data: https:;
-               connect-src 'self' https://your-api-domain.com;">
+               connect-src 'self' https://your-weather-api-domain.com https://your-news-api-domain.com;">
 ```
 
 ### 2. Environment Variables Security
@@ -1140,5 +1148,5 @@ echo "https://storage.googleapis.com/weather-station-frontend/index.html"
 
 ---
 
-**Last Updated:** 2026-01-08
-**Version:** 1.0.0
+**Last Updated:** 2026-01-24
+**Version:** 1.1.0

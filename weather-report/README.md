@@ -132,10 +132,10 @@ VITE_NEWS_API_PORT=8300
 VITE_DEFAULT_CITY=Seattle
 
 # Cache configuration (in seconds)
-VITE_FORECAST_CACHE_DURATION=600
+VITE_REPORT_CACHE_DURATION=600
 
 # Retry configuration (in seconds)
-VITE_FORECAST_RETRY_DELAY=120
+VITE_REPORT_RETRY_DELAY=120
 ```
 
 **Note**: If you need to change the backend ports, simply update `VITE_FORECAST_API_PORT` or `VITE_NEWS_API_PORT` in your `.env.local` file. All API calls will automatically use the new ports.
