@@ -13,14 +13,14 @@ RUN npm ci
 COPY . .
 
 # Build arguments for environment variables
-ARG VITE_FORECAST_API_BASE_URL
+ARG VITE_WEATHER_API_BASE_URL
 ARG VITE_NEWS_API_BASE_URL
 ARG VITE_DEFAULT_CITY=New York
 ARG VITE_REPORT_CACHE_DURATION=600
 ARG VITE_REPORT_RETRY_DELAY=120
 
 # Create .env file
-RUN echo "VITE_FORECAST_API_BASE_URL=${VITE_FORECAST_API_BASE_URL}" > .env.production && \
+RUN echo "VITE_WEATHER_API_BASE_URL=${VITE_WEATHER_API_BASE_URL}" > .env.production && \
     echo "VITE_NEWS_API_BASE_URL=${VITE_NEWS_API_BASE_URL}" >> .env.production && \
     echo "VITE_DEFAULT_CITY=${VITE_DEFAULT_CITY}" >> .env.production && \
     echo "VITE_REPORT_CACHE_DURATION=${VITE_REPORT_CACHE_DURATION}" >> .env.production && \

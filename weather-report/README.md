@@ -117,8 +117,8 @@ Create `.env.local`:
 VITE_FORECAST_API_HOST=localhost
 VITE_FORECAST_API_PORT=8200
 
-# For production: use VITE_FORECAST_API_BASE_URL with your deployed backend URL
-# VITE_FORECAST_API_BASE_URL=https://your-weather-api.cloud.run.app
+# For production: use VITE_WEATHER_API_BASE_URL with your deployed backend URL
+# VITE_WEATHER_API_BASE_URL=https://your-weather-api.cloud.run.app
 
 # Backend News API Configuration
 # For local development: use VITE_NEWS_API_HOST and VITE_NEWS_API_PORT

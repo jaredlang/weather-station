@@ -15,17 +15,17 @@ const parseSeconds = (value: string | undefined, defaultSeconds: number): number
 };
 
 /**
- * Build Forecast API base URL from host and port environment variables
+ * Build Weather API base URL from host and port environment variables
  */
 const getApiBaseUrl = (): string => {
   // First try the full URL if provided
-  if (import.meta.env.VITE_FORECAST_API_BASE_URL) {
-    return import.meta.env.VITE_FORECAST_API_BASE_URL;
+  if (import.meta.env.VITE_WEATHER_API_BASE_URL) {
+    return import.meta.env.VITE_WEATHER_API_BASE_URL;
   }
 
   // Otherwise construct from host and port
-  const apiHost = import.meta.env.VITE_FORECAST_API_HOST || 'localhost';
-  const apiPort = import.meta.env.VITE_FORECAST_API_PORT || '8200';
+  const apiHost = import.meta.env.VITE_WEATHER_API_HOST || 'localhost';
+  const apiPort = import.meta.env.VITE_WEATHER_API_PORT || '8200';
   return `http://${apiHost}:${apiPort}`;
 };
 

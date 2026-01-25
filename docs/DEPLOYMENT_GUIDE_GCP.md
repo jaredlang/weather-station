@@ -87,7 +87,7 @@ npm install
 
 # Create production environment file
 cat > .env.production << EOF
-VITE_FORECAST_API_BASE_URL=https://your-api-domain.com
+VITE_WEATHER_API_BASE_URL=https://your-api-domain.com
 VITE_DEFAULT_CITY=Seattle
 VITE_REPORT_CACHE_DURATION=600
 VITE_REPORT_RETRY_DELAY=120
@@ -320,14 +320,14 @@ RUN npm ci
 COPY . .
 
 # Build arguments for environment variables
-ARG VITE_FORECAST_API_BASE_URL
+ARG VITE_WEATHER_API_BASE_URL
 ARG VITE_NEWS_API_BASE_URL
 ARG VITE_DEFAULT_CITY=Seattle
 ARG VITE_REPORT_CACHE_DURATION=600
 ARG VITE_REPORT_RETRY_DELAY=120
 
 # Create .env file
-RUN echo "VITE_FORECAST_API_BASE_URL=${VITE_FORECAST_API_BASE_URL}" > .env.production && \
+RUN echo "VITE_WEATHER_API_BASE_URL=${VITE_WEATHER_API_BASE_URL}" > .env.production && \
     echo "VITE_NEWS_API_BASE_URL=${VITE_NEWS_API_BASE_URL}" >> .env.production && \
     echo "VITE_DEFAULT_CITY=${VITE_DEFAULT_CITY}" >> .env.production && \
     echo "VITE_REPORT_CACHE_DURATION=${VITE_REPORT_CACHE_DURATION}" >> .env.production && \
@@ -415,8 +415,8 @@ gcloud run deploy $SERVICE_NAME \
     --cpu 1 \
     --min-instances 0 \
     --max-instances 10 \
-    --set-env-vars "VITE_FORECAST_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL" \
-    --set-build-env-vars "VITE_FORECAST_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL"
+    --set-env-vars "VITE_WEATHER_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL" \
+    --set-build-env-vars "VITE_WEATHER_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL"
 
 # Get the service URL
 gcloud run services describe $SERVICE_NAME \
@@ -460,8 +460,8 @@ gcloud run deploy $SERVICE_NAME \
     --cpu 1 \
     --min-instances 0 \
     --max-instances 10 \
-    --set-env-vars "VITE_FORECAST_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL" \
-    --set-build-env-vars "VITE_FORECAST_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL"
+    --set-env-vars "VITE_WEATHER_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL" \
+    --set-build-env-vars "VITE_WEATHER_API_BASE_URL=$API_URL,VITE_NEWS_API_BASE_URL=$NEWS_API_URL"
 
 echo "Deployment complete!"
 gcloud run services describe $SERVICE_NAME \
@@ -560,7 +560,7 @@ This creates [firebase.json](weather-report/firebase.json):
 Create [.env.production](weather-report/.env.production):
 
 ```bash
-VITE_FORECAST_API_BASE_URL=https://your-weather-api-domain.com
+VITE_WEATHER_API_BASE_URL=https://your-weather-api-domain.com
 VITE_NEWS_API_BASE_URL=https://your-news-api-domain.com
 VITE_DEFAULT_CITY=Seattle
 VITE_REPORT_CACHE_DURATION=600
@@ -627,7 +627,7 @@ runtime: nodejs18
 service: default
 
 env_variables:
-  VITE_FORECAST_API_BASE_URL: "https://your-api-domain.com"
+  VITE_WEATHER_API_BASE_URL: "https://your-api-domain.com"
   VITE_DEFAULT_CITY: "Seattle"
 
 handlers:
@@ -728,7 +728,7 @@ gcloud run services describe weather-api \
     --region us-central1 \
     --format 'value(status.url)'
 
-# Use this URL in your frontend VITE_FORECAST_API_BASE_URL
+# Use this URL in your frontend VITE_WEATHER_API_BASE_URL
 # Or configure VITE_FORECAST_API_HOST and VITE_FORECAST_API_PORT for local development
 ```
 
@@ -835,7 +835,7 @@ steps:
     args: ['run', 'build']
     dir: 'weather-report'
     env:
-      - 'VITE_FORECAST_API_BASE_URL=${_API_URL}'
+      - 'VITE_WEATHER_API_BASE_URL=${_API_URL}'
       - 'VITE_NEWS_API_BASE_URL=${_NEWS_API_URL}'
       - 'VITE_DEFAULT_CITY=${_DEFAULT_CITY}'
 
@@ -945,7 +945,7 @@ jobs:
       - name: Build
         working-directory: weather-report
         env:
-          VITE_FORECAST_API_BASE_URL: ${{ secrets.API_URL }}
+          VITE_WEATHER_API_BASE_URL: ${{ secrets.API_URL }}
           VITE_NEWS_API_BASE_URL: ${{ secrets.NEWS_API_URL }}
           VITE_DEFAULT_CITY: Seattle
         run: npm run build

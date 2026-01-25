@@ -8,13 +8,13 @@ SERVICE_NAME="weather-station"
 TAG="${TAG:-latest}"
 IMAGE_PATH="gcr.io/${PROJECT_ID}/${SERVICE_NAME}:${TAG}"
 
-FORECAST_API_URL="https://weather-forecast-api-951067725786.us-central1.run.app"
-NEWS_API_URL="${NEWS_API_URL:-https://news-api-951067725786.us-central1.run.app}"
+WEATHER_API_URL="https://weather-forecast-api-951067725786.us-central1.run.app"
+NEWS_API_URL="https://news-report-api-951067725786.us-central1.run.app"
 
 echo "================================================"
 echo "Building Docker image"
 echo "================================================"
-echo "Forecast API URL: $FORECAST_API_URL"
+echo "Weather API URL: $WEATHER_API_URL"
 echo "News API URL: $NEWS_API_URL"
 echo "Project ID: ${PROJECT_ID}"
 echo "Service Name: ${SERVICE_NAME}"
@@ -24,7 +24,7 @@ echo "================================================"
 
 # Build the image with build arguments
 docker build \
-    --build-arg VITE_FORECAST_API_BASE_URL="$FORECAST_API_URL" \
+    --build-arg VITE_WEATHER_API_BASE_URL="$WEATHER_API_URL" \
     --build-arg VITE_NEWS_API_BASE_URL="$NEWS_API_URL" \
     --build-arg VITE_DEFAULT_CITY="New York" \
     --build-arg VITE_REPORT_CACHE_DURATION=600 \
