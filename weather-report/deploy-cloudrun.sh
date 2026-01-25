@@ -4,7 +4,7 @@ set -e
 # Configuration
 PROJECT_ID=$(gcloud config get-value project)
 REGION="${GCP_REGION:-us-central1}"
-SERVICE_NAME="weather-station"
+SERVICE_NAME="report-station"
 TAG="${TAG:-latest}"
 
 PORT="${PORT:-8080}"
