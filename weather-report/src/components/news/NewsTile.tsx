@@ -24,12 +24,17 @@ export const NewsTile = ({
   return (
     <button
       onClick={onClick}
-      className="relative aspect-[4/3] w-full rounded-xl overflow-hidden
+      disabled={isPreparing}
+      className={`relative aspect-[4/3] w-full rounded-xl overflow-hidden
                  bg-gradient-to-br from-orange-500 via-red-500 to-rose-500
                  dark:from-orange-900 dark:via-red-900 dark:to-rose-900
-                 hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 cursor-pointer
+                 transition-transform duration-200
                  focus:outline-none focus:ring-2 focus:ring-apple-blue dark:focus:ring-apple-darkblue focus:ring-offset-2
-                 shadow-lg hover:shadow-xl"
+                 shadow-lg ${
+                   isPreparing
+                     ? 'cursor-not-allowed opacity-80'
+                     : 'hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-xl'
+                 }`}
     >
       {hasImage && !isPreparing && !isLoading && (
         <>

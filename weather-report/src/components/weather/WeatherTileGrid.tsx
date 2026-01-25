@@ -62,7 +62,12 @@ export const WeatherTileGrid = ({
               pictureUrl={cityData.pictureUrl}
               isPreparing={cityData.status === 'preparing'}
               isLoading={cityData.status === 'loading'}
-              onClick={() => onCitySelect(cityData.city)}
+              onClick={() => {
+                // Don't allow selecting tiles that are still preparing
+                if (cityData.status !== 'preparing') {
+                  onCitySelect(cityData.city);
+                }
+              }}
             />
           </motion.div>
         ))}

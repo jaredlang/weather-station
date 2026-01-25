@@ -63,7 +63,12 @@ export const NewsTileGrid = ({
               imageUrl={subredditData.imageUrl}
               isPreparing={subredditData.status === 'preparing'}
               isLoading={subredditData.status === 'loading'}
-              onClick={() => onSubredditSelect(subredditData.subreddit)}
+              onClick={() => {
+                // Don't allow selecting tiles that are still preparing
+                if (subredditData.status !== 'preparing') {
+                  onSubredditSelect(subredditData.subreddit);
+                }
+              }}
             />
           </motion.div>
         ))}
