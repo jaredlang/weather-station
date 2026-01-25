@@ -37,7 +37,7 @@ export const NewsTileGrid = ({
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-light text-apple-dark dark:text-apple-light">
-            Welcome to WHUT News Service
+            Welcome to WHUT News Services
           </h2>
           <p className="text-apple-gray">
             Search for a subreddit to view the latest news report
