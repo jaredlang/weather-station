@@ -7,7 +7,7 @@ interface NewsHeroProps {
   imageUrl?: string;
 }
 
-export const NewsHero = ({ subreddit, title, imageUrl }: NewsHeroProps) => {
+export const NewsHero = ({ subreddit, imageUrl }: NewsHeroProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const hasImage = !!imageUrl?.trim();
 
@@ -35,16 +35,9 @@ export const NewsHero = ({ subreddit, title, imageUrl }: NewsHeroProps) => {
         <h1 className="text-6xl md:text-8xl font-thin tracking-tight text-white drop-shadow-lg">
           {formatSubredditName(subreddit)}
         </h1>
-        {title && (
-          <p className="mt-4 text-xl md:text-2xl font-light text-white/90 max-w-2xl mx-auto">
-            {title}
-          </p>
-        )}
-        {!title && (
-          <p className="mt-4 text-xl md:text-2xl font-light text-white/90">
-            Latest News Report
-          </p>
-        )}
+        <p className="mt-4 text-xl md:text-2xl font-light text-white/90">
+          Latest News Report
+        </p>
       </div>
     </div>
   );
